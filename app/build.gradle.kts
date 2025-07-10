@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
-    namespace = "com.example.googlepaytest"
-    compileSdk = 35
+    namespace = "com.maddie.webviewgooglepaytest"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.googlepaytest"
-        minSdk = 29
-        targetSdk = 35
+        applicationId = "com.maddie.webviewgooglepaytest"
+        minSdk = 24
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -33,6 +34,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
@@ -43,4 +48,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.google.android.gms:play-services-wallet:19.3.0")
+    
+    implementation("androidx.compose.ui:ui:1.6.7")
+    implementation("androidx.compose.ui:ui-tooling:1.6.7")
+    implementation("androidx.compose.foundation:foundation:1.6.7")
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.runtime:runtime:1.6.7")
+    implementation("androidx.activity:activity-compose:1.9.0")
 }

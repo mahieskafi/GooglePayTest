@@ -16,7 +16,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    WebViewScreen(url = "https://www.google.com")
+                    // Load the local HTML asset with JS and button
+                    WebViewScreen(url = "file:///android_asset/webview_test.html")
                 }
             }
         }

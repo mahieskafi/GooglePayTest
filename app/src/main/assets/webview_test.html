@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebView JS Test</title>
+    <script type="text/javascript">
+        function showMessage() {
+            // Call Android interface to check Google Pay
+            if (window.Android && window.Android.checkGooglePay) {
+                window.Android.checkGooglePay();
+            } else {
+                alert('Android interface not available.');
+            }
+        }
+        function showGooglePayButton() {
+            if (!document.getElementById('gpay-btn')) {
+                var btn = document.createElement('button');
+                btn.id = 'gpay-btn';
+                btn.innerText = 'Pay by Google Pay';
+                btn.onclick = function() {
+                    // Call Android interface to start Google Pay
+                    if (window.Android && window.Android.startGooglePay) {
+                        window.Android.startGooglePay();
+                    } else {
+                        alert('Android interface not available.');
+                    }
+                };
+                document.body.appendChild(btn);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>WebView JavaScript Page</h2>
+    <button onclick="showMessage()">Click Me</button>
+</body>
+</html>

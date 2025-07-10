@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    com.example.googlepaytest.ui.WebViewScreen(
+                    WebViewScreen(
                         url = "file:///android_asset/webview_test.html",
                         onRequestGooglePay = { paymentDataRequestJson ->
                             val request = com.google.android.gms.wallet.PaymentDataRequest.fromJson(paymentDataRequestJson)

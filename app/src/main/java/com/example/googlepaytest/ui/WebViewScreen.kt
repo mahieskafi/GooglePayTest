@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import org.json.JSONObject
 
-class WebAppInterface(private val context: Context, private val webView: WebView) {
+class WebAppInterface(private val context: Context, private val webView: WebView, private val onRequestGooglePay: (String) -> Unit) {
     @JavascriptInterface
     fun checkGooglePay() {
         val paymentsClient = Wallet.getPaymentsClient(
@@ -27,6 +27,23 @@ class WebAppInterface(private val context: Context, private val webView: WebView
         val isReadyToPayJson = JSONObject()
         isReadyToPayJson.put("apiVersion", 2)
         isReadyToPayJson.put("apiVersionMinor", 0)
+        // Add allowedPaymentMethods for Google Pay validation
+        val allowedPaymentMethods = org.json.JSONArray()
+        val cardPaymentMethod = org.json.JSONObject()
+        cardPaymentMethod.put("type", "CARD")
+        val parameters = org.json.JSONObject()
+        parameters.put("allowedAuthMethods", org.json.JSONArray().put("PAN_ONLY").put("CRYPTOGRAM_3DS"))
+        parameters.put("allowedCardNetworks", org.json.JSONArray().put("AMEX").put("DISCOVER").put("JCB").put("MASTERCARD").put("VISA"))
+        cardPaymentMethod.put("parameters", parameters)
+        cardPaymentMethod.put("tokenizationSpecification", org.json.JSONObject().apply {
+            put("type", "PAYMENT_GATEWAY")
+            put("parameters", org.json.JSONObject().apply {
+                put("gateway", "example")
+                put("gatewayMerchantId", "exampleGatewayMerchantId")
+            })
+        })
+        allowedPaymentMethods.put(cardPaymentMethod)
+        isReadyToPayJson.put("allowedPaymentMethods", allowedPaymentMethods)
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
         val task: Task<Boolean> = paymentsClient.isReadyToPay(request)
         task.addOnCompleteListener { completedTask ->
@@ -43,21 +60,53 @@ class WebAppInterface(private val context: Context, private val webView: WebView
 
     @JavascriptInterface
     fun startGooglePay() {
-        // TODO: Implement Google Pay native flow here
-        Toast.makeText(context, "Google Pay flow started! (implement native flow)", Toast.LENGTH_LONG).show()
+        val paymentDataRequestJson = org.json.JSONObject().apply {
+            put("apiVersion", 2)
+            put("apiVersionMinor", 0)
+            val allowedPaymentMethods = org.json.JSONArray()
+            val cardPaymentMethod = org.json.JSONObject()
+            cardPaymentMethod.put("type", "CARD")
+            val parameters = org.json.JSONObject()
+            parameters.put("allowedAuthMethods", org.json.JSONArray().put("PAN_ONLY").put("CRYPTOGRAM_3DS"))
+            parameters.put("allowedCardNetworks", org.json.JSONArray().put("AMEX").put("DISCOVER").put("JCB").put("MASTERCARD").put("VISA"))
+            parameters.put("billingAddressRequired", true)
+            val billingAddressParameters = org.json.JSONObject()
+            billingAddressParameters.put("format", "FULL")
+            parameters.put("billingAddressParameters", billingAddressParameters)
+            cardPaymentMethod.put("parameters", parameters)
+            cardPaymentMethod.put("tokenizationSpecification", org.json.JSONObject().apply {
+                put("type", "PAYMENT_GATEWAY")
+                put("parameters", org.json.JSONObject().apply {
+                    put("gateway", "example")
+                    put("gatewayMerchantId", "exampleGatewayMerchantId")
+                })
+            })
+            allowedPaymentMethods.put(cardPaymentMethod)
+            put("allowedPaymentMethods", allowedPaymentMethods)
+            put("transactionInfo", org.json.JSONObject().apply {
+                put("totalPriceStatus", "FINAL")
+                put("totalPrice", "1.00")
+                put("currencyCode", "USD")
+            })
+            put("merchantInfo", org.json.JSONObject().apply {
+                put("merchantName", "Example Merchant")
+            })
+        }
+        onRequestGooglePay(paymentDataRequestJson.toString())
     }
 }
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebViewScreen(url: String) {
+fun WebViewScreen(url: String, onRequestGooglePay: (String) -> Unit, onWebViewReady: (WebView) -> Unit) {
     AndroidView(factory = { context ->
         WebView(context).apply {
             webViewClient = WebViewClient()
             webChromeClient = WebChromeClient()
             settings.javaScriptEnabled = true
-            val iface = WebAppInterface(context, this)
+            val iface = WebAppInterface(context, this, onRequestGooglePay)
             addJavascriptInterface(iface, "Android")
+            onWebViewReady(this)
             loadUrl(url)
         }
     })

@@ -50,7 +50,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("com.google.android.gms:play-services-wallet:19.3.0")
-    
+
+    implementation("androidx.webkit:webkit:1.14.0")
+
     implementation("androidx.compose.ui:ui:1.6.7")
     implementation("androidx.compose.ui:ui-tooling:1.6.7")
     implementation("androidx.compose.foundation:foundation:1.6.7")

@@ -27,6 +27,10 @@
                 };
                 document.body.appendChild(btn);
             }
+             function onGooglePaySuccess(token) {
+            alert('Google Pay Success! Token: ' + token);
+            // You can send the token to your backend here
+        }
         }
     </script>
 </head>

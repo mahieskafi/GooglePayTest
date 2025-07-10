@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "assembleDebug",
+      "type": "shell",
+      "command": "./gradlew assembleDebug",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "installDebug",
+      "type": "shell",
+      "command": "./gradlew installDebug",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
